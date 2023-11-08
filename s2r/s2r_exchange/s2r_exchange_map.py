@@ -61,5 +61,5 @@ if __name__ == '__main__':
     exchange_map = get_data_from_api(url=url, headers=headers)
     save_json_to_csv(output=exchange_map,
         date=date,
-        path='/Users/vuh/Documents/crypto-data-engineering-project/exchange_map/')
+        path='/home/flying-dragon/Documents/crypto-data-engineering-project/exchange_map/')
 
