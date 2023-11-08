@@ -1,0 +1,16 @@
+API:
+  EXCHANGE:
+    ASSET: "https://api.example.com/asd"
+    INFO: "https://api.example.com/xyz"
+    LISTING_LATEST: "https://api.example.com/xyz"
+    MAP: "https://pro-api.coinmarketcap.com/v1/exchange/map?listing_status=inactive,active"
+    MARKET_PAIRS_LATEST: "https://api.example.com/xyz"
+    QUOTES_HISTORICAL: "https://api.example.com/xyz"
+    QUOTES_LATEST: "https://api.example.com/xyz"
+
+PATH:
+  RAW_ZONE: '/Users/vuh/Documents/crypto-data-engineering-project'
+  GOLDEN_ZONE: '/Users/vuh/Documents/crypto-data-engineering-project'
+
+DATE: '20231029'
+
