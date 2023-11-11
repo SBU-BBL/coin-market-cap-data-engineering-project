@@ -1,9 +1,5 @@
 import os
-import math
-import time
 import requests
-import pandas as pd
-from datetime import datetime, timedelta, date
 import csv
 import yaml
 
@@ -31,7 +27,8 @@ def save_json_to_csv(output, date, path):
         writer = csv.writer(csv_file)
         
         # Write the header (keys from the first dictionary in the list)
-        writer.writerow(output[0].keys())
+        if output:
+            writer.writerow(output[0].keys())
         
         # Write the rows
         for row in output:
@@ -49,6 +46,10 @@ if __name__ == '__main__':
 
     url = config['API']['EXCHANGE']['MAP']
     date = config['DATE']
+    raw_zone_path = config['PATH']['RAW_ZONE']
+    table_name = os.path.splitext(os.path.basename(__file__))[0].split('s2r_')[-1]
+    table_path = raw_zone_path + f'/{table_name}/'
+
 
     API_KEY = os.environ.get('API_KEY')
 
@@ -61,5 +62,5 @@ if __name__ == '__main__':
     exchange_map = get_data_from_api(url=url, headers=headers)
     save_json_to_csv(output=exchange_map,
         date=date,
-        path='/Users/vuh/Documents/crypto-data-engineering-project/exchange_map/')
+        path=table_path)
 
