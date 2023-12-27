@@ -1,3 +1,4 @@
+#Example
 API:
   EXCHANGE:
     ASSET: "https://api.example.com/asd"
@@ -8,9 +9,16 @@ API:
     QUOTES_HISTORICAL: 'https://pro-api.coinmarketcap.com/v1/exchange/quotes/historical'
     QUOTES_LATEST: "https://api.example.com/xyz"
 
-PATH:
-  RAW_ZONE: '/Users/vuh/Documents/crypto-data-engineering-project'
-  GOLDEN_ZONE: '/Users/vuh/Documents/crypto-data-engineering-project'
+  CRYPTOCURRENCY:
+    MAP: "https://pro-api.coinmarketcap.com/v1/cryptocurrency/map?listing_status=inactive,active&limit=5000"
+    QUOTES_HISTORICAL: "https://pro-api.coinmarketcap.com/v2/cryptocurrency/quotes/historical"
+    OHLCV_HISTORICAL: "https://pro-api.coinmarketcap.com/v2/cryptocurrency/ohlcv/historical"
 
+#include the path
+PATH:
+  RAW_ZONE: '[path]'
+  GOLDEN_ZONE: '[path]'
+
+#Default date for testing
 DATE: '20231107'
 
