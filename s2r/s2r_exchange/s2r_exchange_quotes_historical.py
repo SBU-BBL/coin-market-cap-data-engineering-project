@@ -6,6 +6,7 @@ import pandas as pd
 from datetime import datetime, timedelta, date
 import csv
 import yaml
+import json
 
 
 def get_data_from_api(url, headers):
@@ -20,26 +21,18 @@ def get_data_from_api(url, headers):
         print(response.status_code)
 
 
-def save_json_to_csv(output, date, path):
+def save_json(output, date, path):
     # if not exist
     coin_slug = output['slug']
     path += f'{coin_slug}/'
     if not os.path.exists(path):
         os.makedirs(path)
     
-    full_path = path + f'{date}.csv'
+    full_path = path + f'{date}.json'
     data = output['quotes']
 
-    with open(full_path, "w", newline="") as csv_file:
-        writer = csv.writer(csv_file)
-        
-        # Write the header (keys from the first dictionary in the list)
-        if data:
-            writer.writerow(data[0].keys())
-        
-        # Write the rows
-        for row in data:
-            writer.writerow(row.values())
+    with open(full_path, 'w') as json_file:
+        json.dump(output, json_file, indent=4)
 
 def get_coin_id(date, path):
     path += f'{date}.csv'
@@ -84,7 +77,7 @@ if __name__ == '__main__':
     for coin_id in coin_id_list:
         # process
         exchange_map = get_data_from_api(url=url + f'?id={str(coin_id)}&time_start={time_start}&time_end={time_end}&interval={interval}', headers=headers)
-        save_json_to_csv(output=exchange_map,
+        save_json(output=exchange_map,
             date=date,
             path=table_path)
 
