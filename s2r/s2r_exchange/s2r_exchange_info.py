@@ -9,9 +9,17 @@ import yaml
 import json
 
 
-def get_data_from_api(url, headers):
-    # Create api request & receive response
-    response = requests.get(url, headers=headers)
+def chunked_list(lst, chunk_size):
+    """Yield successive chunk_size chunks from lst."""
+    for i in range(0, len(lst), chunk_size):
+        yield lst[i:i + chunk_size]
+
+def get_data_from_api(url, headers, coin_ids):
+    # Join the coin IDs into a comma-separated string
+    ids_string = ','.join(map(str, coin_ids))
+    full_url = f"{url}?id={ids_string}"
+    
+    response = requests.get(full_url, headers=headers)
     if response.status_code == 200:
         result = response.json()
         if result:
@@ -19,17 +27,20 @@ def get_data_from_api(url, headers):
             return data
     else:
         print(response.status_code)
-
-
-def save_json(output, path):
-    if not os.path.exists(path):
-        os.makedirs(path)
+        return []
     
-    coin_slug = output['slug']
-    full_path = path + f'{coin_slug}.json'
+def save_json(output, path):
+    for coin_data in output.values():
+        coin_symbol = coin_data['slug']
 
-    with open(full_path, 'w') as json_file:
-        json.dump(output, json_file, indent=4)
+        if not os.path.exists(path):
+            os.makedirs(path)
+            
+        coin_file_path = os.path.join(path, coin_symbol + '.json')
+
+        with open(coin_file_path, "w") as json_file:
+            json.dump(coin_data, json_file, indent=4)
+
 
 def get_coin_id(date, path):
     path += f'{date}.csv'
@@ -37,8 +48,8 @@ def get_coin_id(date, path):
     return id_list
 
 
-if __name__ == '__main__':
 
+if __name__ == '__main__':
     # get config
     with open("config.yml", 'r') as stream:
         try:
@@ -60,6 +71,8 @@ if __name__ == '__main__':
     
     # api config
     API_KEY = os.environ.get('API_KEY')
+    API_KEY = '2ca92cfc-43ad-4ec6-9f43-353fb6bf7085'
+
     headers = {
         'Accepts': 'application/json',
         'X-CMC_PRO_API_KEY': API_KEY
@@ -69,10 +82,13 @@ if __name__ == '__main__':
     exchange_map_path = config['PATH']['RAW_ZONE'] + '/exchange_map/'
     coin_id_list = get_coin_id(date, exchange_map_path)
     
-    for coin_id in coin_id_list:
-        exchange_info = get_data_from_api(url=url + f'?id={str(coin_id)}', headers=headers)
-        exchange_info = exchange_info[str(coin_id)]
+    
+
+    batch_size = 34
+    for coin_batch in chunked_list(coin_id_list, batch_size):
+        exchange_info = get_data_from_api(url=url, headers=headers, coin_ids=coin_batch)
         save_json(output=exchange_info, path=table_path)
+
         
 
 

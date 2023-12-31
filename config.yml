@@ -1,13 +1,9 @@
 #Example
 API:
   EXCHANGE:
-    ASSET: "https://api.example.com/asd"
     INFO: "https://pro-api.coinmarketcap.com/v1/exchange/info"
-    LISTING_LATEST: "https://api.example.com/xyz"
-    MAP: "https://pro-api.coinmarketcap.com/v1/exchange/map?listing_status=active&limit=5000"
-    MARKET_PAIRS_LATEST: "https://api.example.com/xyz"
+    MAP: "https://pro-api.coinmarketcap.com/v1/exchange/map?listing_status=active"
     QUOTES_HISTORICAL: 'https://pro-api.coinmarketcap.com/v1/exchange/quotes/historical'
-    QUOTES_LATEST: "https://api.example.com/xyz"
 
   CRYPTOCURRENCY:
     MAP: "https://pro-api.coinmarketcap.com/v1/cryptocurrency/map?listing_status=active"
