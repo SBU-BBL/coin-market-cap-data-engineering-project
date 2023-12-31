@@ -4,20 +4,20 @@ API:
     ASSET: "https://api.example.com/asd"
     INFO: "https://pro-api.coinmarketcap.com/v1/exchange/info"
     LISTING_LATEST: "https://api.example.com/xyz"
-    MAP: "https://pro-api.coinmarketcap.com/v1/exchange/map?listing_status=inactive,active&limit=5000"
+    MAP: "https://pro-api.coinmarketcap.com/v1/exchange/map?listing_status=active&limit=5000"
     MARKET_PAIRS_LATEST: "https://api.example.com/xyz"
     QUOTES_HISTORICAL: 'https://pro-api.coinmarketcap.com/v1/exchange/quotes/historical'
     QUOTES_LATEST: "https://api.example.com/xyz"
 
   CRYPTOCURRENCY:
-    MAP: "https://pro-api.coinmarketcap.com/v1/cryptocurrency/map?listing_status=inactive,active&limit=5000"
+    MAP: "https://pro-api.coinmarketcap.com/v1/cryptocurrency/map?listing_status=active"
     QUOTES_HISTORICAL: "https://pro-api.coinmarketcap.com/v2/cryptocurrency/quotes/historical"
     OHLCV_HISTORICAL: "https://pro-api.coinmarketcap.com/v2/cryptocurrency/ohlcv/historical"
 
 #include the path
 PATH:
-  RAW_ZONE: '[path]'
-  GOLDEN_ZONE: '[path]'
+  RAW_ZONE: 'Your Path'
+  GOLDEN_ZONE: 'Your Path'
 
 #Default date for testing
 DATE: '20231107'
