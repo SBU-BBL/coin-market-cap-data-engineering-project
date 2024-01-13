@@ -6,11 +6,20 @@ import pandas as pd
 from datetime import datetime, timedelta, date
 import csv
 import yaml
+import json
 
 
-def get_data_from_api(url, headers):
-    # Create api request & receive response
-    response = requests.get(url, headers=headers)
+def chunked_list(lst, chunk_size):
+    """Yield successive chunk_size chunks from lst."""
+    for i in range(0, len(lst), chunk_size):
+        yield lst[i:i + chunk_size]
+
+def get_data_from_api(url, headers, coin_ids, time_start, time_end, interval):
+    # Join the coin IDs into a comma-separated string
+    ids_string = ','.join(map(str, coin_ids))
+    full_url = f"{url}?id={ids_string}&time_start={time_start}&time_end={time_end}&interval={interval}&count=10000"
+    
+    response = requests.get(full_url, headers=headers)
     if response.status_code == 200:
         result = response.json()
         if result:
@@ -18,28 +27,20 @@ def get_data_from_api(url, headers):
             return data
     else:
         print(response.status_code)
+        return []
 
-
-def save_json_to_csv(output, date, path):
-    # if not exist
-    coin_slug = output['slug']
-    path += f'{coin_slug}/'
-    if not os.path.exists(path):
-        os.makedirs(path)
-    
-    full_path = path + f'{date}.csv'
-    data = output['quotes']
-
-    with open(full_path, "w", newline="") as csv_file:
-        writer = csv.writer(csv_file)
+def save_json(output, date, path):
+    for coin_data in output.values():
+        coin_symbol = coin_data['slug']
+        coin_path = os.path.join(path, coin_symbol)
+        if not os.path.exists(coin_path):
+            os.makedirs(coin_path)
         
-        # Write the header (keys from the first dictionary in the list)
-        if data:
-            writer.writerow(data[0].keys())
-        
-        # Write the rows
-        for row in data:
-            writer.writerow(row.values())
+        full_path = os.path.join(coin_path, f'{date}.json')
+        data = coin_data['quotes']
+
+        with open(full_path, "w") as json_file:
+            json.dump(data, json_file, indent=4)
 
 def get_coin_id(date, path):
     path += f'{date}.csv'
@@ -71,6 +72,8 @@ if __name__ == '__main__':
     
     # api config
     API_KEY = os.environ.get('API_KEY')
+    API_KEY = '2ca92cfc-43ad-4ec6-9f43-353fb6bf7085'
+
     headers = {
         'Accepts': 'application/json',
         'X-CMC_PRO_API_KEY': API_KEY
@@ -81,10 +84,17 @@ if __name__ == '__main__':
     coin_id_list = get_coin_id(date, exchange_map_path)
     
     interval = '5m'
-    for coin_id in coin_id_list:
-        # process
-        exchange_map = get_data_from_api(url=url + f'?id={str(coin_id)}&time_start={time_start}&time_end={time_end}&interval={interval}', headers=headers)
-        save_json_to_csv(output=exchange_map,
-            date=date,
-            path=table_path)
+
+    batch_size = 34
+    for coin_batch in chunked_list(coin_id_list, batch_size):
+        exchange_maps = get_data_from_api(
+            url=url, 
+            headers=headers, 
+            coin_ids=coin_batch, 
+            time_start=time_start, 
+            time_end=time_end, 
+            interval=interval
+        )
+        if exchange_maps:
+            save_json(output=exchange_maps, date=date, path=table_path)
 

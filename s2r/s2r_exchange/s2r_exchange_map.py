@@ -3,10 +3,15 @@ import requests
 import csv
 import yaml
 
+def chunked_list(lst, chunk_size):
+    """Yield successive chunk_size chunks from lst."""
+    for i in range(0, len(lst), chunk_size):
+        yield lst[i:i + chunk_size]
 
-def get_data_from_api(url, headers):
-    # Create api request & receive response
-    response = requests.get(url, headers=headers)
+def get_data_from_api(url, headers, start, limit):
+    # Create api request & receive response 
+    paginated_url = f"{url}&start={start}&limit={limit}"
+    response = requests.get(paginated_url, headers=headers)
     if response.status_code == 200:
         result = response.json()
         if result:
@@ -14,25 +19,17 @@ def get_data_from_api(url, headers):
             return data
     else:
         print(response.status_code)
+    return []
 
 
-def save_json_to_csv(output, date, path):
-    # if not exist
-    if not os.path.exists(path):
-        os.makedirs(path)
-    
-    full_path = path + f'{date}.csv'
-    
-    with open(full_path, "w", newline="") as csv_file:
-        writer = csv.writer(csv_file)
-        
+def save_data_to_csv(output, csv_file, is_first_batch):
+    if is_first_batch:
         # Write the header (keys from the first dictionary in the list)
-        if output:
-            writer.writerow(output[0].keys())
-        
-        # Write the rows
-        for row in output:
-            writer.writerow(row.values())
+        csv_file.writerow(output[0].keys())
+    
+    # Write the rows
+    for row in output:
+        csv_file.writerow(row.values())
 
 
 if __name__ == '__main__':
@@ -51,7 +48,9 @@ if __name__ == '__main__':
     table_path = raw_zone_path + f'/{table_name}/'
 
 
-    API_KEY = os.environ.get('API_KEY')
+    # API_KEY = os.environ.get('API_KEY')
+    API_KEY = '2ca92cfc-43ad-4ec6-9f43-353fb6bf7085'
+
 
     headers = {
         'Accepts': 'application/json',
@@ -59,8 +58,27 @@ if __name__ == '__main__':
     }
 
     # process
-    exchange_map = get_data_from_api(url=url, headers=headers)
-    save_json_to_csv(output=exchange_map,
-        date=date,
-        path=table_path)
+    limit = 5000
+    start = 1
+    is_first_batch = True
 
+    full_path = table_path + f'{date}.csv'
+    if not os.path.exists(table_path):
+        os.makedirs(table_path)
+
+    with open(full_path, "w", newline="") as csv_file:
+        writer = csv.writer(csv_file)
+
+        while True:
+            batch_data = get_data_from_api(url=url, headers=headers, start=start, limit=limit)
+            if not batch_data:
+                break
+
+            save_data_to_csv(batch_data, writer, is_first_batch)
+            is_first_batch = False
+
+            if len(batch_data) < limit:
+                # Last batch
+                break
+
+            start += limit  # Move to the next batc
