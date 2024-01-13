@@ -10,6 +10,9 @@ API:
     QUOTES_HISTORICAL: "https://pro-api.coinmarketcap.com/v2/cryptocurrency/quotes/historical"
     OHLCV_HISTORICAL: "https://pro-api.coinmarketcap.com/v2/cryptocurrency/ohlcv/historical"
 
+  GLOBAL_METRIC:
+    QUOTES_HISTORICAL: "https://pro-api.coinmarketcap.com/v1/global-metrics/quotes/historical"
+
 #include the path
 PATH:
   RAW_ZONE: 'Your Path'
