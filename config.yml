@@ -12,10 +12,12 @@ API:
 
   GLOBAL_METRIC:
     QUOTES_HISTORICAL: "https://pro-api.coinmarketcap.com/v1/global-metrics/quotes/historical"
+  FIAT:
+    MAP: "https://pro-api.coinmarketcap.com/v1/fiat/map"
 
 #include the path
 PATH:
-  RAW_ZONE: 'Your Path'
+  RAW_ZONE: '/Users/birajghimire/Desktop/crypto-data-engineering-project'
   GOLDEN_ZONE: 'Your Path'
 
 #Default date for testing
