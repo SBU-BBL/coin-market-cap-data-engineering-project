@@ -12,12 +12,19 @@ API:
 
   GLOBAL_METRIC:
     QUOTES_HISTORICAL: "https://pro-api.coinmarketcap.com/v1/global-metrics/quotes/historical"
+
   FIAT:
     MAP: "https://pro-api.coinmarketcap.com/v1/fiat/map"
 
+  CONTENT:
+    LATEST: "https://pro-api.coinmarketcap.com/v1/content/latest"
+    POST_TOP: "https://pro-api.coinmarketcap.com/v1/content/posts/top"
+    POST_LATEST: "https://pro-api.coinmarketcap.com/v1/content/posts/latest"
+    POST_COMMENT: "https://pro-api.coinmarketcap.com/v1/content/posts/comments"
+
 #include the path
 PATH:
-  RAW_ZONE: '/Users/birajghimire/Desktop/crypto-data-engineering-project'
+  RAW_ZONE: '/Users/vuh/Documents/crypto-data-engineering-project'
   GOLDEN_ZONE: 'Your Path'
 
 #Default date for testing
