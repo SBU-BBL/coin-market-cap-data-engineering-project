@@ -79,7 +79,7 @@ if __name__ == '__main__':
         if not batch_data:
             break
 
-        save_data_to_json(batch_data, full_path)  # Assuming that API response has a 'data' key
+        save_data_to_json(batch_data, full_path) 
 
         if len(batch_data) < limit:
             # Last batch
