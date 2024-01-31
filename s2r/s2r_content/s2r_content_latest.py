@@ -26,17 +26,21 @@ def save_data_to_csv(output, csv_file, is_first_batch):
     for row in output:
         csv_file.writerow(row.values())
 
-def save_data_to_json(output, json_file):
-    # Append data to existing JSON file
+def save_data_to_json(output, json_file_path):
+    # Read existing data, modify, and write back to JSON file
     try:
-        existing_data = json.load(json_file)
-        json_file.seek(0)  # Go to the beginning of the file
+        if os.path.exists(json_file_path) and os.path.getsize(json_file_path) > 0:
+            with open(json_file_path, "r") as json_file:
+                existing_data = json.load(json_file)
+        else:
+            existing_data = []
+        
         existing_data.extend(output)
-        json.dump(existing_data, json_file, indent=4)
-    except json.JSONDecodeError:
-        # File is empty or not valid JSON, so just write the output
-        json.dump(output, json_file, indent=4)
-
+        
+        with open(json_file_path, "w") as json_file:
+            json.dump(existing_data, json_file, indent=4)
+    except json.JSONDecodeError as e:
+        print(f"Error reading JSON file: {e}")
 
 if __name__ == '__main__':
     # get config
@@ -66,21 +70,20 @@ if __name__ == '__main__':
     start = 1
     is_first_batch = True
 
-    full_path = table_path + f'{date}.csv'
+    full_path = table_path + f'{date}.json'
     if not os.path.exists(table_path):
         os.makedirs(table_path)
 
-    with open(full_path, "a+", newline="") as json_file:  # 'a+' mode to append and read
-        while True:
-            batch_data = get_data_from_api(url=url, headers=headers, start=start, limit=limit)
-            if not batch_data:
-                break
+    while True:
+        batch_data = get_data_from_api(url=url, headers=headers, start=start, limit=limit)
+        if not batch_data:
+            break
 
-            save_data_to_json(batch_data, json_file)
+        save_data_to_json(batch_data, full_path)  # Assuming that API response has a 'data' key
 
-            if len(batch_data) < limit:
-                # Last batch
-                break
-            start += limit  # Move to the next batch
+        if len(batch_data) < limit:
+            # Last batch
+            break
+        start += limit  # Move to the next batch
             
     print(start)
