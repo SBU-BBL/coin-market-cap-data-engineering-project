@@ -1,6 +1,9 @@
 import subprocess
 import os
 
+def run_script(script_name, date):
+    subprocess.run(['python', script_name, '--date', str(date)], check=True)
+
 def get_directory_file_paths(root_directory):
     directory_file_paths = {}
     
@@ -12,7 +15,6 @@ def get_directory_file_paths(root_directory):
         # Add to the dictionary
         directory_file_paths[relative_subdir] = file_paths
 
-    
     return directory_file_paths
 
 repo_path = '/Users/vuh/Documents/crypto-data-engineering-project/s2r/'
@@ -21,9 +23,9 @@ directory_file_paths_dict = get_directory_file_paths(repo_path)
 
 s2r_path = {
    "s2r_exchange":[
+    "/Users/vuh/Documents/crypto-data-engineering-project/s2r/s2r_exchange/s2r_exchange_map.py",
     "/Users/vuh/Documents/crypto-data-engineering-project/s2r/s2r_exchange/s2r_exchange_info.py",
-    "/Users/vuh/Documents/crypto-data-engineering-project/s2r/s2r_exchange/s2r_exchange_map.py"
-    "/Users/vuh/Documents/crypto-data-engineering-project/s2r/s2r_exchange/s2r_exchange_quotes_historical.py",
+    "/Users/vuh/Documents/crypto-data-engineering-project/s2r/s2r_exchange/s2r_exchange_quotes_historical.py"
    ],
    "s2r_cryptocurrency":[
     "/Users/vuh/Documents/crypto-data-engineering-project/s2r/s2r_cryptocurrency/s2r_cryptocurrency_map.py",
@@ -32,24 +34,23 @@ s2r_path = {
    ],
    "s2r_global_metric":[
     "/Users/vuh/Documents/crypto-data-engineering-project/s2r/s2r_global_metric/s2r_global_metric_quotes_historical.py"
-   ],
-   "s2r_fiat":[
-    "/Users/vuh/Documents/crypto-data-engineering-project/s2r/s2r_fiat/s2r_fiat_map.py"
-   ],
-   "s2r_content":[
-    "/Users/vuh/Documents/crypto-data-engineering-project/s2r/s2r_content/s2r_post_comment.py",
-    "/Users/vuh/Documents/crypto-data-engineering-project/s2r/s2r_content/s2r_post_latest.py",
-    "/Users/vuh/Documents/crypto-data-engineering-project/s2r/s2r_content/s2r_content_latest.py",
-    "/Users/vuh/Documents/crypto-data-engineering-project/s2r/s2r_content/s2r_post_top.py"
    ]
+#    "s2r_fiat":[
+#     "/Users/vuh/Documents/crypto-data-engineering-project/s2r/s2r_fiat/s2r_fiat_map.py"
+#    ],
+#    "s2r_content":[
+#     "/Users/vuh/Documents/crypto-data-engineering-project/s2r/s2r_content/s2r_post_comment.py",
+#     "/Users/vuh/Documents/crypto-data-engineering-project/s2r/s2r_content/s2r_post_latest.py",
+#     "/Users/vuh/Documents/crypto-data-engineering-project/s2r/s2r_content/s2r_content_latest.py",
+#     "/Users/vuh/Documents/crypto-data-engineering-project/s2r/s2r_content/s2r_post_top.py"
+#    ]
 }
 
 
-def run_script(script_name, date):
-    subprocess.run(['python', script_name, '--date', str(date)], check=True)
-
-dates_to_run = ['2023-11-01', '2023-11-02'] 
+dates_to_run = ['20231101', '20231102'] 
 
 for date in dates_to_run:
-    for script in scripts:
-        run_script(script, date)
+    for folder in s2r_path.keys():
+        for script in s2r_path[folder]:
+            run_script(script, date)
+

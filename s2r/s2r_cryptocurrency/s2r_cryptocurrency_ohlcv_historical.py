@@ -86,7 +86,7 @@ interval = 'hourly'
 time_period = 'hourly'
 for coin_id in coin_id_list:
     # process
-    cryptocurrency_map = get_data_from_api(url=url + f'?id={str(coin_id)}&time_start={time_start}&time_end={date}&interval={interval}&time_period={time_period}', headers=headers)
+    cryptocurrency_map = get_data_from_api(url=url + f'?id={str(coin_id)}&time_start={time_start}&time_end={time_end}&interval={interval}&time_period={time_period}', headers=headers)
     save_json(output=cryptocurrency_map,
         date=date,
         path=table_path)
