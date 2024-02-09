@@ -24,7 +24,7 @@ API:
 
 #include the path
 PATH:
-  RAW_ZONE: '/Users/vuh/Documents/crypto-data-engineering-project'
+  RAW_ZONE: '/Users/birajghimire/Desktop/crypto-data-engineering-project'
   GOLDEN_ZONE: 'Your Path'
 
 #Default date for testing
