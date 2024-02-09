@@ -80,7 +80,7 @@ if __name__ == '__main__':
             break
 
         save_data_to_json(batch_data, full_path) 
-
+    
         if len(batch_data) < limit:
             # Last batch
             break
