@@ -3,6 +3,8 @@ import requests
 import csv
 import yaml
 import json
+import argparse
+from dotenv import load_dotenv
 
 def get_data_from_api(url, headers, start, limit):
     # Create api request & receive response 
@@ -42,48 +44,54 @@ def save_data_to_json(output, json_file_path):
     except json.JSONDecodeError as e:
         print(f"Error reading JSON file: {e}")
 
-if __name__ == '__main__':
-    # get config
-    with open("config.yml", 'r') as stream:
-        try:
-            config = yaml.safe_load(stream)
-        except yaml.YAMLError as exc:
-            print(exc)
 
-    url = config['API']['CONTENT']['LATEST']
-    date = config['DATE']
-    raw_zone_path = config['PATH']['RAW_ZONE']
-    table_name = os.path.splitext(os.path.basename(__file__))[0].split('s2r_')[-1]
-    table_path = raw_zone_path + f'/{table_name}/'
+# get config
+with open("config.yml", 'r') as stream:
+    try:
+        config = yaml.safe_load(stream)
+    except yaml.YAMLError as exc:
+        print(exc)
 
+url = config['API']['CONTENT']['LATEST']
+raw_zone_path = config['PATH']['RAW_ZONE']
+table_name = os.path.splitext(os.path.basename(__file__))[0].split('s2r_')[-1]
+table_path = raw_zone_path + f'/{table_name}/'
 
-    # API_KEY = os.environ.get('API_KEY')
-    API_KEY = '2ca92cfc-43ad-4ec6-9f43-353fb6bf7085'
+# Set up argument parsing
+parser = argparse.ArgumentParser(description='Process')
+parser.add_argument('--date', required=True, help='The date to process data for')
 
-    headers = {
-        'Accepts': 'application/json',
-        'X-CMC_PRO_API_KEY': API_KEY
-    }
+# Parse the arguments
+args = parser.parse_args()
+date = args.date
 
-    # process
-    limit = 200
-    start = 1
-    is_first_batch = True
+load_dotenv()
+API_KEY = os.getenv('API_KEY')
 
-    full_path = table_path + f'{date}.json'
-    if not os.path.exists(table_path):
-        os.makedirs(table_path)
+headers = {
+    'Accepts': 'application/json',
+    'X-CMC_PRO_API_KEY': API_KEY
+}
 
-    while True:
-        batch_data = get_data_from_api(url=url, headers=headers, start=start, limit=limit)
-        if not batch_data:
-            break
+# process
+limit = 200
+start = 1
+is_first_batch = True
 
-        save_data_to_json(batch_data, full_path) 
-    
-        if len(batch_data) < limit:
-            # Last batch
-            break
-        start += limit  # Move to the next batch
-            
-    print(start)
+full_path = table_path + f'{date}.json'
+if not os.path.exists(table_path):
+    os.makedirs(table_path)
+
+while True:
+    batch_data = get_data_from_api(url=url, headers=headers, start=start, limit=limit)
+    if not batch_data:
+        break
+
+    save_data_to_json(batch_data, full_path) 
+
+    if len(batch_data) < limit:
+        # Last batch
+        break
+    start += limit  # Move to the next batch
+        
+print(start)
