@@ -7,7 +7,8 @@ from datetime import datetime, timedelta, date
 import csv
 import yaml
 import json
-
+import argparse
+from dotenv import load_dotenv
 
 def chunked_list(lst, chunk_size):
     """Yield successive chunk_size chunks from lst."""
@@ -49,46 +50,52 @@ def get_coin_id(date, path):
 
 
 
-if __name__ == '__main__':
-    # get config
-    with open("config.yml", 'r') as stream:
-        try:
-            config = yaml.safe_load(stream)
-        except yaml.YAMLError as exc:
-            print(exc)
+# get config
+with open("config.yml", 'r') as stream:
+    try:
+        config = yaml.safe_load(stream)
+    except yaml.YAMLError as exc:
+        print(exc)
 
-    url = config['API']['EXCHANGE']['INFO']
-    date = config['DATE']
-    raw_zone_path = config['PATH']['RAW_ZONE']
-    table_name = os.path.splitext(os.path.basename(__file__))[0].split('s2r_')[-1]
-    table_path = raw_zone_path + f'/{table_name}/'
+url = config['API']['EXCHANGE']['INFO']
+raw_zone_path = config['PATH']['RAW_ZONE']
+table_name = os.path.splitext(os.path.basename(__file__))[0].split('s2r_')[-1]
+table_path = raw_zone_path + f'/{table_name}/'
 
-    # date processing
-    current_day = datetime.strptime(date, '%Y%m%d')
-    previous_day = current_day - timedelta(days=1)
-    time_start = previous_day.strftime('%Y-%m-%dT23:55:00Z')
-    time_end = current_day.strftime('%Y-%m-%dT23:59:59Z')
+# Set up argument parsing
+parser = argparse.ArgumentParser(description='Process')
+parser.add_argument('--date', required=True, help='The date to process data for')
+
+# Parse the arguments
+args = parser.parse_args()
+date = args.date
+
+# date processing
+current_day = datetime.strptime(date, '%Y%m%d')
+previous_day = current_day - timedelta(days=1)
+time_start = previous_day.strftime('%Y-%m-%dT23:55:00Z')
+time_end = current_day.strftime('%Y-%m-%dT23:59:59Z')
+
+# api key
+load_dotenv()
+API_KEY = os.getenv('API_KEY')
+
+headers = {
+    'Accepts': 'application/json',
+    'X-CMC_PRO_API_KEY': API_KEY
+}
+
+# get coin id
+exchange_map_path = config['PATH']['RAW_ZONE'] + '/exchange_map/'
+coin_id_list = get_coin_id(date, exchange_map_path)
+
+
+
+batch_size = 34
+for coin_batch in chunked_list(coin_id_list, batch_size):
+    exchange_info = get_data_from_api(url=url, headers=headers, coin_ids=coin_batch)
+    save_json(output=exchange_info, path=table_path)
+
     
-    # api config
-    API_KEY = os.environ.get('API_KEY')
-    API_KEY = '2ca92cfc-43ad-4ec6-9f43-353fb6bf7085'
-
-    headers = {
-        'Accepts': 'application/json',
-        'X-CMC_PRO_API_KEY': API_KEY
-    }
-
-    # get coin id
-    exchange_map_path = config['PATH']['RAW_ZONE'] + '/exchange_map/'
-    coin_id_list = get_coin_id(date, exchange_map_path)
-    
-    
-
-    batch_size = 34
-    for coin_batch in chunked_list(coin_id_list, batch_size):
-        exchange_info = get_data_from_api(url=url, headers=headers, coin_ids=coin_batch)
-        save_json(output=exchange_info, path=table_path)
-
-        
 
 

@@ -2,6 +2,8 @@ import os
 import requests
 import csv
 import yaml
+import argparse
+from dotenv import load_dotenv
 
 def get_fiat_data_from_api(url, headers):
     # Create api request & receive response
@@ -32,13 +34,20 @@ if __name__ == '__main__':
             print(exc)
 
     fiat_url = config['API']['FIAT']['MAP']  # Adjust this according to your config structure
-    date = config['DATE']
     raw_zone_path = config['PATH']['RAW_ZONE']
     table_name = 'fiat_currency_map'  # Change to the appropriate table name
     table_path = raw_zone_path + f'/{table_name}/'
 
-    # API_KEY = os.environ.get('API_KEY')
-    API_KEY = '2ca92cfc-43ad-4ec6-9f43-353fb6bf7085'  # Replace with your API key
+    # Set up argument parsing
+    parser = argparse.ArgumentParser(description='Process')
+    parser.add_argument('--date', required=True, help='The date to process data for')
+
+    # Parse the arguments
+    args = parser.parse_args()
+    date = args.date
+
+    load_dotenv()
+    API_KEY = os.getenv('API_KEY')
 
     headers = {
         'Accepts': 'application/json',

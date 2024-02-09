@@ -2,6 +2,8 @@ import os
 import requests
 import csv
 import yaml
+import argparse
+from dotenv import load_dotenv
 
 
 def get_data_from_api(url, headers, start, limit):
@@ -28,52 +30,57 @@ def save_data_to_csv(output, csv_file, is_first_batch):
         csv_file.writerow(row.values())
 
 
-if __name__ == '__main__':
 
-    # get config
-    with open("config.yml", 'r') as stream:
-        try:
-            config = yaml.safe_load(stream)
-        except yaml.YAMLError as exc:
-            print(exc)
+# get config
+with open("config.yml", 'r') as stream:
+    try:
+        config = yaml.safe_load(stream)
+    except yaml.YAMLError as exc:
+        print(exc)
 
-    url = config['API']['CRYPTOCURRENCY']['MAP']
-    date = config['DATE']
-    raw_zone_path = config['PATH']['RAW_ZONE']
-    table_name = os.path.splitext(os.path.basename(__file__))[0].split('s2r_')[-1]
-    table_path = raw_zone_path + f'/{table_name}/'
+url = config['API']['CRYPTOCURRENCY']['MAP']
+raw_zone_path = config['PATH']['RAW_ZONE']
+table_name = os.path.splitext(os.path.basename(__file__))[0].split('s2r_')[-1]
+table_path = raw_zone_path + f'/{table_name}/'
 
+# Set up argument parsing
+parser = argparse.ArgumentParser(description='Process')
+parser.add_argument('--date', required=True, help='The date to process data for')
 
-    # API_KEY = os.environ.get('API_KEY')
-    API_KEY = '2ca92cfc-43ad-4ec6-9f43-353fb6bf7085'
+# Parse the arguments
+args = parser.parse_args()
+date = args.date
 
-    headers = {
-        'Accepts': 'application/json',
-        'X-CMC_PRO_API_KEY': API_KEY
-    }
+load_dotenv()
+API_KEY = os.getenv('API_KEY')
 
-    # process
-    limit = 5000
-    start = 1
-    is_first_batch = True
+headers = {
+    'Accepts': 'application/json',
+    'X-CMC_PRO_API_KEY': API_KEY
+}
 
-    full_path = table_path + f'{date}.csv'
-    if not os.path.exists(table_path):
-        os.makedirs(table_path)
+# process
+limit = 5000
+start = 1
+is_first_batch = True
 
-    with open(full_path, "w", newline="") as csv_file:
-        writer = csv.writer(csv_file)
+full_path = table_path + f'{date}.csv'
+if not os.path.exists(table_path):
+    os.makedirs(table_path)
 
-        while True:
-            batch_data = get_data_from_api(url=url, headers=headers, start=start, limit=limit)
-            if not batch_data:
-                break
+with open(full_path, "w", newline="") as csv_file:
+    writer = csv.writer(csv_file)
 
-            save_data_to_csv(batch_data, writer, is_first_batch)
-            is_first_batch = False
+    while True:
+        batch_data = get_data_from_api(url=url, headers=headers, start=start, limit=limit)
+        if not batch_data:
+            break
 
-            if len(batch_data) < limit:
-                # Last batch
-                break
-            start += limit  # Move to the next batc
+        save_data_to_csv(batch_data, writer, is_first_batch)
+        is_first_batch = False
+
+        if len(batch_data) < limit:
+            # Last batch
+            break
+        start += limit  # Move to the next batc
 
