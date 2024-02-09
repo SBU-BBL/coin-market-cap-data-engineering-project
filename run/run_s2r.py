@@ -15,7 +15,6 @@ def get_directory_file_paths(root_directory):
     
     return directory_file_paths
 
-# Replace 'your_repo_path' with the path to your repository
 repo_path = '/Users/vuh/Documents/crypto-data-engineering-project/s2r/'
 directory_file_paths_dict = get_directory_file_paths(repo_path)
 
