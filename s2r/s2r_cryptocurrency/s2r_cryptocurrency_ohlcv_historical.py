@@ -42,7 +42,6 @@ def get_coin_id(date, path):
     return id_list
 
 
-
 # get config
 with open("config.yml", 'r') as stream:
     try:
