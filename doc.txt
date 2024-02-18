@@ -1,0 +1,13 @@
+# raw zone data structure:
+
+## exchange:
+### exchange_info: json format (just copy)
+### exchange_map: csv format -> csv format (just copy)
+### exchange_quote: ts data, json -> csv format (etl)
+
+
+## cryptocurrency:
+### cryptocurrency_map: csv format -> csv format (just copy)
+### cryptocurrency_ohlcv: json format -> csv format (etl)
+### cryptocurrency_quote: json format -> csv format (etl)
+
