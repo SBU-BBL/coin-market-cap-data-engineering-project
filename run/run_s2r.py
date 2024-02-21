@@ -46,7 +46,6 @@ s2r_path = {
 #    ]
 }
 
-
 dates_to_run = ['20231101', '20231102'] 
 
 for date in dates_to_run:

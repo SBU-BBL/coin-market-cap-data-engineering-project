@@ -45,11 +45,14 @@ def save_json(output, date, path):
             json.dump(data, json_file, indent=4)
 
 def get_coin_id(date, path):
-    path += f'{date}.csv'
-    id_list = pd.read_csv(path, usecols=[0]).iloc[:, 0].tolist()
-    return id_list
+    file_path = f'{path}{date}.csv'
+    df = pd.read_csv(file_path)
+    df['first_historical_data'] = pd.to_datetime(df['first_historical_data']).dt.tz_localize(None)
+    given_date = pd.to_datetime(date, format='%Y%m%d')
 
-
+    # Filter rows where 'first_historical_data' is less than or equal to the given date
+    filtered_df = df[df['first_historical_data'] <= given_date]
+    return filtered_df['id'].tolist()
 
 # get config
 with open("config.yml", 'r') as stream:

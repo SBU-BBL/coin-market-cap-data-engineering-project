@@ -1,4 +1,4 @@
-# raw zone data structure:
+# raw zone data structure: 
 
 ## exchange:
 ### exchange_info: json format (just copy)
