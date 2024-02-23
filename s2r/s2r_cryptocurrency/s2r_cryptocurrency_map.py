@@ -29,8 +29,6 @@ def save_data_to_csv(output, csv_file, is_first_batch):
     for row in output:
         csv_file.writerow(row.values())
 
-
-
 # get config
 with open("config.yml", 'r') as stream:
     try:
@@ -41,15 +39,16 @@ with open("config.yml", 'r') as stream:
 url = config['API']['CRYPTOCURRENCY']['MAP']
 raw_zone_path = config['PATH']['RAW_ZONE']
 table_name = os.path.splitext(os.path.basename(__file__))[0].split('s2r_')[-1]
-table_path = raw_zone_path + f'/{table_name}/'
+endpoint_name = os.path.splitext(os.path.basename(__file__))[0].split('_')[1]
+table_path = os.path.join(raw_zone_path, endpoint_name, table_name)
 
 # Set up argument parsing
-parser = argparse.ArgumentParser(description='Process')
-parser.add_argument('--date', required=True, help='The date to process data for')
+# parser = argparse.ArgumentParser(description='Process')
+# parser.add_argument('--date', required=True, help='The date to process data for')
 
-# Parse the arguments
-args = parser.parse_args()
-date = args.date
+# # Parse the arguments
+# args = parser.parse_args()
+# date = args.date
 
 load_dotenv()
 API_KEY = os.getenv('API_KEY')
@@ -64,11 +63,11 @@ limit = 5000
 start = 1
 is_first_batch = True
 
-full_path = table_path + f'{date}.csv'
+full_path = os.path.join(table_path, f'{table_name}.csv')
 if not os.path.exists(table_path):
     os.makedirs(table_path)
 
-with open(full_path, "w", newline="") as csv_file:
+with open(full_path, "w", newline="", encoding="utf-8") as csv_file:
     writer = csv.writer(csv_file)
 
     while True:

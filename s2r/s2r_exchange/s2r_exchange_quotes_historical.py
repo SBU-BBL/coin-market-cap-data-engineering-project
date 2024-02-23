@@ -45,8 +45,7 @@ def save_json(output, date, path):
             json.dump(data, json_file, indent=4)
 
 def get_coin_id(date, path):
-    file_path = f'{path}{date}.csv'
-    df = pd.read_csv(file_path)
+    df = pd.read_csv(path)
     df['first_historical_data'] = pd.to_datetime(df['first_historical_data']).dt.tz_localize(None)
     given_date = pd.to_datetime(date, format='%Y%m%d')
 
@@ -65,7 +64,8 @@ url = config['API']['EXCHANGE']['QUOTES_HISTORICAL']
 raw_zone_path = config['PATH']['RAW_ZONE']
 
 table_name = os.path.splitext(os.path.basename(__file__))[0].split('s2r_')[-1]
-table_path = raw_zone_path + f'/{table_name}/'
+endpoint_name = os.path.splitext(os.path.basename(__file__))[0].split('_')[1]
+table_path = os.path.join(raw_zone_path, endpoint_name, table_name)
 
 # Set up argument parsing
 parser = argparse.ArgumentParser(description='Process')
@@ -91,7 +91,8 @@ headers = {
 }
 
 # add parameters
-exchange_map_path = config['PATH']['RAW_ZONE'] + '/exchange_map/'
+exchange_map_path = os.path.join(raw_zone_path, endpoint_name, "exchange_map", "exchange_map.csv")
+
 coin_id_list = get_coin_id(date, exchange_map_path)
 
 interval = '5m'

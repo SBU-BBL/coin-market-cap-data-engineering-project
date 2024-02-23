@@ -11,3 +11,6 @@
 ### cryptocurrency_ohlcv: json format -> csv format (etl)
 ### cryptocurrency_quote: json format -> csv format (etl)
 
+ API provider acknowledges that they might have issues causing intermittent 400 errors,
+  this suggests that the problem is on their end. 
+  => fix with while loop and recall this api when 400 error happens

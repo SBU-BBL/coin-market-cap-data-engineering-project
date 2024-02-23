@@ -43,14 +43,14 @@ def save_json(output, path):
             json.dump(coin_data, json_file, indent=4)
 
 def get_coin_id(date, path):
-    file_path = f'{path}{date}.csv'
-    df = pd.read_csv(file_path)
+    df = pd.read_csv(path)
     df['first_historical_data'] = pd.to_datetime(df['first_historical_data']).dt.tz_localize(None)
     given_date = pd.to_datetime(date, format='%Y%m%d')
 
     # Filter rows where 'first_historical_data' is less than or equal to the given date
     filtered_df = df[df['first_historical_data'] <= given_date]
     return filtered_df['id'].tolist()
+
 
 # get config
 with open("config.yml", 'r') as stream:
@@ -62,7 +62,8 @@ with open("config.yml", 'r') as stream:
 url = config['API']['EXCHANGE']['INFO']
 raw_zone_path = config['PATH']['RAW_ZONE']
 table_name = os.path.splitext(os.path.basename(__file__))[0].split('s2r_')[-1]
-table_path = raw_zone_path + f'/{table_name}/'
+endpoint_name = os.path.splitext(os.path.basename(__file__))[0].split('_')[1]
+table_path = os.path.join(raw_zone_path, endpoint_name, table_name)
 
 # Set up argument parsing
 parser = argparse.ArgumentParser(description='Process')
@@ -88,10 +89,9 @@ headers = {
 }
 
 # get coin id
-exchange_map_path = config['PATH']['RAW_ZONE'] + '/exchange_map/'
+exchange_map_path = os.path.join(raw_zone_path, endpoint_name, "exchange_map", "exchange_map.csv")
+
 coin_id_list = get_coin_id(date, exchange_map_path)
-
-
 
 batch_size = 34
 for coin_batch in chunked_list(coin_id_list, batch_size):

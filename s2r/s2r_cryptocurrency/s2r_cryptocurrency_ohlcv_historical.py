@@ -1,5 +1,4 @@
 import os
-import math
 import time
 import requests
 import pandas as pd
@@ -9,7 +8,7 @@ import yaml
 import json
 from dotenv import load_dotenv
 import argparse
-
+from utilities.check_log import is_batch_processed, log_processed_batch, get_log_file_path
 
 def chunked_list(lst, chunk_size):
     """Yield successive chunk_size chunks from lst."""
@@ -20,15 +19,22 @@ def get_data_from_api(url, headers, coin_ids, time_start, time_end, interval, ti
     # Join the coin IDs into a comma-separated string
     ids_string = ','.join(map(str, coin_ids))
     full_url = f"{url}?id={ids_string}&time_start={time_start}&time_end={time_end}&interval={interval}&time_period={time_period}&count=10000"
-    response = requests.get(full_url, headers=headers)
-    if response.status_code == 200:
-        result = response.json()
-        if result:
-            data = result['data']
-            return data
-    else:
-        print(response.status_code)
-        return []
+
+    attempt = 0
+    max_attempts = 3
+    while attempt < max_attempts:
+        response = requests.get(full_url, headers=headers)
+        if response.status_code == 200:
+            result = response.json()
+            if result:
+                data = result['data']
+                return data
+        elif response.status_code == 400:
+            time.sleep(2 * attempt)  # backoff
+        else:
+            print(f"Error: Received status code {response.status_code}")
+            raise SystemExit(f"Script terminated due to status code: {response.status_code}")
+        attempt += 1
 
 def save_json(output, date, path):
     # if not exist
@@ -58,8 +64,7 @@ def save_json(output, date, path):
 
 
 def get_coin_id(date, path):
-    file_path = f'{path}{date}.csv'
-    df = pd.read_csv(file_path)
+    df = pd.read_csv(path)
     df['first_historical_data'] = pd.to_datetime(df['first_historical_data']).dt.tz_localize(None)
     given_date = pd.to_datetime(date, format='%Y%m%d')
 
@@ -78,7 +83,8 @@ url = config['API']['CRYPTOCURRENCY']['OHLCV_HISTORICAL']
 raw_zone_path = config['PATH']['RAW_ZONE']
 
 table_name = os.path.splitext(os.path.basename(__file__))[0].split('s2r_')[-1]
-table_path = raw_zone_path + f'/{table_name}/'
+endpoint_name = os.path.splitext(os.path.basename(__file__))[0].split('_')[1]
+table_path = os.path.join(raw_zone_path, endpoint_name, table_name)
 
 # Set up argument parsing
 parser = argparse.ArgumentParser(description='Process')
@@ -90,9 +96,9 @@ date = args.date
 
 # date processing
 current_day = datetime.strptime(date, '%Y%m%d')
-previous_day = current_day - timedelta(days=1)
-time_start = previous_day.strftime('%Y-%m-%d')
-time_end = current_day.strftime('%Y-%m-%d')
+next_day = current_day + timedelta(days=1)
+time_end = next_day.strftime('%Y-%m-%d')
+time_start = current_day.strftime('%Y-%m-%d')
 
 # api key
 load_dotenv()
@@ -104,14 +110,22 @@ headers = {
 }
 
 # add parameters
-cryptocurrency_map_path = config['PATH']['RAW_ZONE'] + '/cryptocurrency_map/'
+# cryptocurrency_map_path = config['PATH']['RAW_ZONE'] + f'\\{endpoint_name}\\cryptocurrency_map\\cryptocurrency_map.csv'
+cryptocurrency_map_path = os.path.join(raw_zone_path, endpoint_name, "cryptocurrency_map", "cryptocurrency_map.csv")
 coin_id_list = get_coin_id(date, cryptocurrency_map_path)
 
 interval = 'hourly'
 time_period = 'hourly'
 
 batch_size = 34
+
+log_file_path = get_log_file_path()
 for coin_batch in chunked_list(coin_id_list, batch_size):
+    # Check if the batch has already been processed
+    if is_batch_processed(coin_batch, date, log_file_path):
+        print(f"Skipping already processed batch for date: {date}")
+        continue
+
     cryptocurrency_maps = get_data_from_api(
         url=url, 
         headers=headers, 
@@ -121,6 +135,7 @@ for coin_batch in chunked_list(coin_id_list, batch_size):
         interval=interval,
         time_period=time_period
     )
+
     if cryptocurrency_maps:
         save_json(output=cryptocurrency_maps, date=date, path=table_path)
-
+        log_processed_batch(coin_batch, date, log_file_path)
