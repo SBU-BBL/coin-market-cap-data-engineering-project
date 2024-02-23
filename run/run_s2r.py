@@ -37,14 +37,14 @@ s2r_path = {
 #       "X:\\repos\\crypto-data-engineering-project\\s2r\\\\s2r_content\\s2r_content_post_top.py"
 #    ],
    "s2r_cryptocurrency":[
-    #   "X:\\repos\\crypto-data-engineering-project\\s2r\\\\s2r_cryptocurrency\\s2r_cryptocurrency_map.py"
+#       "X:\\repos\\crypto-data-engineering-project\\s2r\\\\s2r_cryptocurrency\\s2r_cryptocurrency_map.py"
       "X:\\repos\\crypto-data-engineering-project\\s2r\\\\s2r_cryptocurrency\\s2r_cryptocurrency_ohlcv_historical.py",
-      "X:\\repos\\crypto-data-engineering-project\\s2r\\\\s2r_cryptocurrency\\s2r_cryptocurrency_quotes_historical.py"
+#       "X:\\repos\\crypto-data-engineering-project\\s2r\\\\s2r_cryptocurrency\\s2r_cryptocurrency_quotes_historical.py"
    ]
 #    "s2r_exchange":[
-#       "X:\\repos\\crypto-data-engineering-project\\s2r\\\\s2r_exchange\\s2r_exchange_info.py",
-#       "X:\\repos\\crypto-data-engineering-project\\s2r\\\\s2r_exchange\\s2r_exchange_map.py",
-#       "X:\\repos\\crypto-data-engineering-project\\s2r\\\\s2r_exchange\\s2r_exchange_quotes_historical.py"
+    #   "X:\\repos\\crypto-data-engineering-project\\s2r\\\\s2r_exchange\\s2r_exchange_info.py",
+    #   "X:\\repos\\crypto-data-engineering-project\\s2r\\\\s2r_exchange\\s2r_exchange_map.py",
+    #   "X:\\repos\\crypto-data-engineering-project\\s2r\\\\s2r_exchange\\s2r_exchange_quotes_historical.py"
 #    ],
 #    "s2r_fiat":[
 #       "X:\\repos\\crypto-data-engineering-project\\s2r\\\\s2r_fiat\\s2r_fiat_map.py"

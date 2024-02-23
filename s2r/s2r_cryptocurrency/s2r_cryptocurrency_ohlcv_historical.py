@@ -8,6 +8,11 @@ import yaml
 import json
 from dotenv import load_dotenv
 import argparse
+import sys
+# Add the root directory to sys.path
+current_script_path = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.abspath(os.path.join(current_script_path, '..', '..'))
+sys.path.append(project_root)
 from utilities.check_log import is_batch_processed, log_processed_batch, get_log_file_path
 
 def chunked_list(lst, chunk_size):
@@ -114,7 +119,7 @@ headers = {
 cryptocurrency_map_path = os.path.join(raw_zone_path, endpoint_name, "cryptocurrency_map", "cryptocurrency_map.csv")
 coin_id_list = get_coin_id(date, cryptocurrency_map_path)
 
-interval = 'hourly'
+interval = '1h'
 time_period = 'hourly'
 
 batch_size = 34

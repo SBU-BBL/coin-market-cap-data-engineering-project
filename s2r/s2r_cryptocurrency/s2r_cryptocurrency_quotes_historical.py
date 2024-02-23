@@ -9,6 +9,11 @@ import yaml
 import json
 import argparse
 from dotenv import load_dotenv
+import sys
+# Add the root directory to sys.path
+current_script_path = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.abspath(os.path.join(current_script_path, '..', '..'))
+sys.path.append(project_root)
 from utilities.check_log import is_batch_processed, log_processed_batch, get_log_file_path
 
 def chunked_list(lst, chunk_size):
@@ -85,7 +90,7 @@ date = args.date
 # date processing
 current_day = datetime.strptime(date, '%Y%m%d')
 previous_day = current_day - timedelta(days=1)
-time_start = previous_day.strftime('%Y-%m-%dT23:55:00Z')
+time_start = current_day.strftime('%Y-%m-%dT00:00:00Z')
 time_end = current_day.strftime('%Y-%m-%dT23:59:59Z')
 
 # api key
@@ -103,7 +108,7 @@ headers = {
 cryptocurrency_map_path = os.path.join(raw_zone_path, endpoint_name, "cryptocurrency_map", "cryptocurrency_map.csv")
 coin_id_list = get_coin_id(date, cryptocurrency_map_path)
 
-interval = '5m'
+interval = '4h'
 log_file_path = get_log_file_path()
 batch_size = 34
 for coin_batch in chunked_list(coin_id_list, batch_size):

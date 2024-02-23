@@ -9,6 +9,16 @@ import yaml
 import json
 import argparse
 from dotenv import load_dotenv
+import sys
+import sys
+import os
+
+# Add the root directory to sys.path
+current_script_path = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.abspath(os.path.join(current_script_path, '..', '..'))
+sys.path.append(project_root)
+
+from utilities.check_log import is_batch_processed, log_processed_batch, get_log_file_path
 
 
 def chunked_list(lst, chunk_size):
@@ -21,15 +31,21 @@ def get_data_from_api(url, headers, coin_ids, time_start, time_end, interval):
     ids_string = ','.join(map(str, coin_ids))
     full_url = f"{url}?id={ids_string}&time_start={time_start}&time_end={time_end}&interval={interval}&count=10000"
     
-    response = requests.get(full_url, headers=headers)
-    if response.status_code == 200:
-        result = response.json()
-        if result:
-            data = result['data']
-            return data
-    else:
-        print(response.status_code)
-        return []
+    attempt = 0
+    max_attempts = 3
+    while attempt < max_attempts:
+        response = requests.get(full_url, headers=headers)
+        if response.status_code == 200:
+            result = response.json()
+            if result:
+                data = result['data']
+                return data
+        elif response.status_code == 400:
+            time.sleep(2 * attempt)  # backoff
+        else:
+            print(f"Error: Received status code {response.status_code}")
+            raise SystemExit(f"Script terminated due to status code: {response.status_code}")
+        attempt += 1
 
 def save_json(output, date, path):
     for coin_data in output.values():
@@ -95,10 +111,13 @@ exchange_map_path = os.path.join(raw_zone_path, endpoint_name, "exchange_map", "
 
 coin_id_list = get_coin_id(date, exchange_map_path)
 
-interval = '5m'
-
+interval = '4h'
+log_file_path = get_log_file_path()
 batch_size = 34
 for coin_batch in chunked_list(coin_id_list, batch_size):
+    if is_batch_processed(coin_batch, date, log_file_path):
+        print(f"Skipping already processed batch for date: {date}")
+        continue
     exchange_maps = get_data_from_api(
         url=url, 
         headers=headers, 
@@ -109,4 +128,5 @@ for coin_batch in chunked_list(coin_id_list, batch_size):
     )
     if exchange_maps:
         save_json(output=exchange_maps, date=date, path=table_path)
+        log_processed_batch(coin_batch, date, log_file_path)
 
