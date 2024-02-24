@@ -30,17 +30,17 @@ def get_date(start_date, end_date):
 repo_path = r'X:\repos\crypto-data-engineering-project\s2r\\'
 directory_file_paths_dict = get_directory_file_paths(repo_path)
 
-s2r_path = {
+# s2r_path = {
 #    "s2r_content":[
 #       "X:\\repos\\crypto-data-engineering-project\\s2r\\\\s2r_content\\s2r_content_latest.py",
 #       "X:\\repos\\crypto-data-engineering-project\\s2r\\\\s2r_content\\s2r_content_post_latest.py",
 #       "X:\\repos\\crypto-data-engineering-project\\s2r\\\\s2r_content\\s2r_content_post_top.py"
 #    ],
-   "s2r_cryptocurrency":[
+#    "s2r_cryptocurrency":[
 #       "X:\\repos\\crypto-data-engineering-project\\s2r\\\\s2r_cryptocurrency\\s2r_cryptocurrency_map.py"
-      "X:\\repos\\crypto-data-engineering-project\\s2r\\\\s2r_cryptocurrency\\s2r_cryptocurrency_ohlcv_historical.py",
+#       "X:\\repos\\crypto-data-engineering-project\\s2r\\\\s2r_cryptocurrency\\s2r_cryptocurrency_ohlcv_historical.py",
 #       "X:\\repos\\crypto-data-engineering-project\\s2r\\\\s2r_cryptocurrency\\s2r_cryptocurrency_quotes_historical.py"
-   ]
+#    ]
 #    "s2r_exchange":[
     #   "X:\\repos\\crypto-data-engineering-project\\s2r\\\\s2r_exchange\\s2r_exchange_info.py",
     #   "X:\\repos\\crypto-data-engineering-project\\s2r\\\\s2r_exchange\\s2r_exchange_map.py",
@@ -52,14 +52,20 @@ s2r_path = {
 #    "s2r_global_metric":[
 #       "X:\\repos\\crypto-data-engineering-project\\s2r\\\\s2r_global_metric\\s2r_global_metric_quotes_historical.py"
 #    ]
-}
+# }
 
-start_date = datetime(2024, 2, 16)
-end_date = datetime(2024, 2, 16) 
+start_date = datetime(2023, 8, 1)
+# for cryptocurrency_map
+# end_date = datetime(2023, 8, 1)
+# for others
+end_date = datetime(2024, 2, 23)
+
+
 dates_to_run = get_date(start_date, end_date)
 
 for date in dates_to_run:
     for folder in s2r_path.keys():
         for script in s2r_path[folder]:
             run_script(script, date)
+            print(f'{date} done')
 

@@ -41,23 +41,12 @@ def get_data_from_api(url, headers, coin_ids, time_start, time_end, interval, ti
             raise SystemExit(f"Script terminated due to status code: {response.status_code}")
         attempt += 1
 
-def save_json(output, date, path):
-    # if not exist
-    coin_symbol = output['symbol']
-    path += f'{coin_symbol}/'
-    if not os.path.exists(path):
-        os.makedirs(path)
-    
-    full_path = path + f'{date}.json'
-    data = output['quotes']
-
-    with open(full_path, "w") as json_file:
-        json.dump(data, json_file, indent=4)
 
 def save_json(output, date, path):
     for coin_data in output.values():
         coin_symbol = coin_data['symbol']
-        coin_path = os.path.join(path, coin_symbol)
+        sanitized_symbol = ''.join(char for char in coin_symbol if char.isalnum())
+        coin_path = os.path.join(path, sanitized_symbol)
         if not os.path.exists(coin_path):
             os.makedirs(coin_path)
         
@@ -101,9 +90,9 @@ date = args.date
 
 # date processing
 current_day = datetime.strptime(date, '%Y%m%d')
-next_day = current_day + timedelta(days=1)
-time_end = next_day.strftime('%Y-%m-%d')
-time_start = current_day.strftime('%Y-%m-%d')
+previous_day = current_day - timedelta(days=1)
+time_end = current_day.strftime('%Y-%m-%d')
+time_start = previous_day.strftime('%Y-%m-%d')
 
 # api key
 load_dotenv()
@@ -119,8 +108,8 @@ headers = {
 cryptocurrency_map_path = os.path.join(raw_zone_path, endpoint_name, "cryptocurrency_map", "cryptocurrency_map.csv")
 coin_id_list = get_coin_id(date, cryptocurrency_map_path)
 
-interval = '1h'
-time_period = 'hourly'
+interval = '1d'
+time_period = 'daily'
 
 batch_size = 34
 

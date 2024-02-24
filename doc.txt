@@ -2,14 +2,17 @@
 
 ## exchange:
 ### exchange_info: json format (just copy)
-### exchange_map: csv format -> csv format (just copy)
+### exchange_map:  csv format -> csv format (just copy)
 ### exchange_quote: ts data, json -> csv format (etl)
 
 
+
+
+### 2023-08-01 to 2024-02-23
 ## cryptocurrency:
 ### cryptocurrency_map: csv format -> csv format (just copy)
-### cryptocurrency_ohlcv: json format -> csv format (etl)
-### cryptocurrency_quote: json format -> csv format (etl)
+### cryptocurrency_ohlcv: (daily data) json format -> csv format (etl)
+### cryptocurrency_quote: (1 hour data) json format -> csv format (etl)
 
  API provider acknowledges that they might have issues causing intermittent 400 errors,
   this suggests that the problem is on their end. 

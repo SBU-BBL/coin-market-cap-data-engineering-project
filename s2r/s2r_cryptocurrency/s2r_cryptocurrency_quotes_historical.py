@@ -46,7 +46,8 @@ def get_data_from_api(url, headers, coin_ids, time_start, time_end, interval):
 def save_json(output, date, path):
     for coin_data in output.values():
         coin_symbol = coin_data['symbol']
-        coin_path = os.path.join(path, coin_symbol)
+        sanitized_symbol = ''.join(char for char in coin_symbol if char.isalnum())
+        coin_path = os.path.join(path, sanitized_symbol)
         if not os.path.exists(coin_path):
             os.makedirs(coin_path)
         
