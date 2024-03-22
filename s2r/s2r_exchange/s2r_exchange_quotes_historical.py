@@ -40,25 +40,66 @@ def get_data_from_api(url, headers, coin_ids, time_start, time_end, interval):
             if result:
                 data = result['data']
                 return data
+        elif response.status_code == 429:
+            time.sleep(20)
         elif response.status_code == 400:
             time.sleep(2 * attempt)  # backoff
         else:
             print(f"Error: Received status code {response.status_code}")
-            raise SystemExit(f"Script terminated due to status code: {response.status_code}")
+            if attempt >= 2:
+                raise SystemExit(f"Script terminated due to status code: {response.status_code}")
         attempt += 1
 
-def save_json(output, date, path):
-    for coin_data in output.values():
-        coin_symbol = coin_data['slug']
-        coin_path = os.path.join(path, coin_symbol)
-        if not os.path.exists(coin_path):
-            os.makedirs(coin_path)
-        
-        full_path = os.path.join(coin_path, f'{date}.json')
-        data = coin_data['quotes']
+def sanitize_symbol(symbol):
+    # List of reserved names in Windows
+    reserved_names = {"CON", "PRN", "AUX", "NUL", "COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9", "LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9"}
+    sanitized = ''.join(char for char in symbol if char.isalnum())
+    # Append an underscore if the name is reserved
+    if sanitized.upper() in reserved_names:
+        sanitized += '_'
+    return sanitized
 
-        with open(full_path, "w") as json_file:
-            json.dump(data, json_file, indent=4)
+# def save_json(output, date, path):
+#     for coin_data in output.values():
+#         coin_symbol = coin_data['slug']
+#         coin_path = os.path.join(path, coin_symbol)
+#         if not os.path.exists(coin_path):
+#             os.makedirs(coin_path)
+        
+#         full_path = os.path.join(coin_path, f'{date}.json')
+#         data = coin_data['quotes']
+
+#         with open(full_path, "w") as json_file:
+#             json.dump(data, json_file, indent=4)
+
+def save_coin_data(coin_data, date, path):
+    # Extract the coin symbol and sanitize it
+    coin_symbol = coin_data['slug']
+    sanitized_symbol = sanitize_symbol(coin_symbol)
+    coin_path = os.path.join(path, sanitized_symbol)
+    os.makedirs(coin_path, exist_ok=True)
+    
+    # Construct the full file path
+    full_path = os.path.join(coin_path, f'{date}.json')
+    
+    # Assuming you want to save the 'quotes' data
+    data = coin_data['quotes']
+    
+    # Save the data to a JSON file
+    with open(full_path, 'w') as file:
+        json.dump(data, file, indent=4)
+
+def save_json(output, date, path):
+    # Check if the output is a dictionary with a 'quotes' key (single coin data)
+    if 'quotes' in output:
+        # Handle single coin data
+        save_coin_data(output, date, path)
+    elif isinstance(output, dict):
+        # Handle multiple coins data
+        for coin_id, coin_data in output.items():
+            save_coin_data(coin_data, date, path)
+    else:
+        raise ValueError("Unexpected data format from API")
 
 def get_coin_id(date, path):
     df = pd.read_csv(path)
@@ -70,7 +111,7 @@ def get_coin_id(date, path):
     return filtered_df['id'].tolist()
 
 # get config
-with open("config.yml", 'r') as stream:
+with open(r"C:\\Users\\haodu\\OneDrive\\Desktop\\crypto\\crypto-data-engineering-project\\config.yml", 'r') as stream:
     try:
         config = yaml.safe_load(stream)
     except yaml.YAMLError as exc:
@@ -94,7 +135,7 @@ date = args.date
 # date processing
 current_day = datetime.strptime(date, '%Y%m%d')
 previous_day = current_day - timedelta(days=1)
-time_start = previous_day.strftime('%Y-%m-%dT23:55:00Z')
+time_start = current_day.strftime('%Y-%m-%dT00:00:00Z')
 time_end = current_day.strftime('%Y-%m-%dT23:59:59Z')
 
 # API key
@@ -113,7 +154,7 @@ coin_id_list = get_coin_id(date, exchange_map_path)
 
 interval = '4h'
 log_file_path = get_log_file_path()
-batch_size = 34
+batch_size = 1000
 for coin_batch in chunked_list(coin_id_list, batch_size):
     if is_batch_processed(coin_batch, date, log_file_path):
         print(f"Skipping already processed batch for date: {date}")

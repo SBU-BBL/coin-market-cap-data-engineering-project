@@ -41,3 +41,28 @@ def get_log_file_path(zone='raw_zone'):
     log_file_path = os.path.join(log_directory, log_file_name)
 
     return log_file_path
+
+def log_processed_date(date, log_path):
+    """Log processing date in a JSON file."""
+    try:
+        with open(log_path, 'r') as log_file:
+            log_data = json.load(log_file)
+    except (FileNotFoundError, json.JSONDecodeError):
+        log_data = []
+
+    # Add the date if it's not already logged
+    if date not in log_data:
+        log_data.append(date)
+
+    with open(log_path, 'w') as log_file:
+        json.dump(log_data, log_file, indent=4)
+
+
+def is_date_processed(date, log_path):
+    """Check if the data for a given date has already been processed."""
+    try:
+        with open(log_path, 'r') as log_file:
+            log_data = json.load(log_file)
+        return date in log_data
+    except (FileNotFoundError, json.JSONDecodeError):
+        return False

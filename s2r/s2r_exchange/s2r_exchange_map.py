@@ -36,7 +36,7 @@ def save_data_to_csv(output, csv_file, is_first_batch):
 
 
 # get config
-with open("config.yml", 'r') as stream:
+with open(r"C:\\Users\\haodu\\OneDrive\\Desktop\\crypto\\crypto-data-engineering-project\\config.yml", 'r') as stream:
     try:
         config = yaml.safe_load(stream)
     except yaml.YAMLError as exc:
