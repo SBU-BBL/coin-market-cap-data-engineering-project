@@ -95,7 +95,7 @@ def get_coin_id(date, path):
     return filtered_df['id'].tolist()
 
 # get config
-with open(r"C:\\Users\\haodu\\OneDrive\\Desktop\\crypto\\crypto-data-engineering-project\\config.yml", 'r') as stream:
+with open(r"config.yml", 'r') as stream:
     try:
         config = yaml.safe_load(stream)
     except yaml.YAMLError as exc:
