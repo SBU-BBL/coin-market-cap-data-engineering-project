@@ -45,7 +45,7 @@ if __name__ == '__main__':
         user_symbol = input("Enter the cryptocurrency symbol you want to get the latest posts for (e.g., BTC, ETH): ").strip()
     
     # get config
-    with open("config.yml", 'r') as stream:
+    with open(r"config.yml", 'r') as stream:
         try:
             config = yaml.safe_load(stream)
         except yaml.YAMLError as exc:

@@ -3,12 +3,12 @@ API:
   EXCHANGE:
     INFO: "https://pro-api.coinmarketcap.com/v1/exchange/info"
     MAP: "https://pro-api.coinmarketcap.com/v1/exchange/map?listing_status=active"
-    QUOTES_HISTORICAL: 'https://pro-api.coinmarketcap.com/v1/exchange/quotes/historical'
+    QUOTES_HISTORICAL: "https://pro-api.coinmarketcap.com/v1/exchange/quotes/historical"
 
   CRYPTOCURRENCY:
     MAP: "https://pro-api.coinmarketcap.com/v1/cryptocurrency/map?listing_status=active"
     QUOTES_HISTORICAL: "https://pro-api.coinmarketcap.com/v2/cryptocurrency/quotes/historical"
-    OHLCV_HISTORICAL: "https://pro-api.coinmarketcap.com/v2/cryptocurrency/ohlcv/historical"
+    OHLCV_HISTORICAL: "https://pro-api.coinmarketcap.com/v2/cryptocurrency/ohlcv/latest"
 
   GLOBAL_METRIC:
     QUOTES_HISTORICAL: "https://pro-api.coinmarketcap.com/v1/global-metrics/quotes/historical"
@@ -24,9 +24,9 @@ API:
 
 #include the path
 PATH:
-  RAW_ZONE: "/Users/vuh/Documents/coin-market-cap-data-engineering-project/raw_zone"
-  GOLDEN_ZONE: '/Users/vuh/Documents/coin-market-cap-data-engineering-project/golden_zone'
+  RAW_ZONE: "D:/coin-market-cap-data-engineering-project/raw_zone_updated"
+  GOLDEN_ZONE: "D:/coin-market-cap-data-engineering-project/golden_zone_updated"
 
 #Default date for testing
-DATE: '20231107'
+# DATE: '20231107'
 

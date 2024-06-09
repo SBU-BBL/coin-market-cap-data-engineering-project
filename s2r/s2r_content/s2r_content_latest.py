@@ -46,7 +46,7 @@ def save_data_to_json(output, json_file_path):
 
 
 # get config
-with open("config.yml", 'r') as stream:
+with open(r"config.yml", 'r') as stream:
     try:
         config = yaml.safe_load(stream)
     except yaml.YAMLError as exc:

@@ -37,6 +37,7 @@ with open(r"config.yml", 'r') as stream:
         print(exc)
 
 url = config['API']['CRYPTOCURRENCY']['MAP']
+
 raw_zone_path = config['PATH']['RAW_ZONE']
 table_name = os.path.splitext(os.path.basename(__file__))[0].split('s2r_')[-1]
 endpoint_name = os.path.splitext(os.path.basename(__file__))[0].split('_')[1]
@@ -52,7 +53,7 @@ table_path = os.path.join(raw_zone_path, endpoint_name, table_name)
 
 load_dotenv()
 API_KEY = os.getenv('API_KEY')
-
+print("This is the key: ", API_KEY)
 headers = {
     'Accepts': 'application/json',
     'X-CMC_PRO_API_KEY': API_KEY

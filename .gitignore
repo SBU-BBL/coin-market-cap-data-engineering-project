@@ -1,5 +1,7 @@
 .env
 .vscode
 .DS_Store
-raw_zone
-golden_zone
+raw_zone/
+golden_zone/
+golden_zone_updated/
+raw_zone_updated/

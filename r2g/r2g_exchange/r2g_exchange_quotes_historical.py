@@ -20,7 +20,7 @@ table_name = os.path.splitext(os.path.basename(__file__))[0].split('r2g_')[-1]
 endpoint_name = os.path.splitext(os.path.basename(__file__))[0].split('_')[1]
 
 golden_table_path = os.path.join(golden_zone_path, endpoint_name, table_name)
-raw_table_path = os.path.join(raw_zone_path, endpoint_name, table_name)
+raw_table_path = os.path.join(raw_zone_path, endpoint_name, "exchange",table_name)
 
 # Ensure the golden_table_path exists
 os.makedirs(golden_table_path, exist_ok=True)
