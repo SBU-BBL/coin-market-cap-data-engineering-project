@@ -30,9 +30,18 @@ git clone https://github.com/<yourusername>/coin-market-cap-data-engineering-pro
 ```
 
 ### 2. Navigate to the Project Directory: 
+
 ```bash
 cd coin-market-cap-data-engineering-project
 ```
+
+To view and edit the code, open the project in an IDE like VS Code by using the following command:
+
+```bash
+code .
+```
+
+This will open the project in VS Code, where you can explore and modify the code as needed.
 
 
 ### 3. Install Required Python Packages:
